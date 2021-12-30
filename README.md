@@ -8,6 +8,13 @@
 
 ### 使用
 
+##### 打开 https://gitee.com/ 登录
+##### 新建仓库 选择导入仓库 https://github.com/zhangti0708/cesium-d3kit.git
+##### 创建仓库并 git clone 到本地即可. 一分钟左右
+##### unzip cesium-d3kit.zip
+##### 将map目录直接放在web服务器下直接浏览
+##### 打开examples目录下的html功能示例文件需要自行引入插件。
+
 #####  在项目中引入Cesium.js
 
 #####  然后引入 cesium-d3kit.js 即可
