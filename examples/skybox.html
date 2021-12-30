@@ -1,0 +1,60 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-28 17:46:52
+ -->
+<div id="viewer-container"></div>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">天空盒</div>
+  <div class="layui-card-body">
+    <div>加载:
+      <button type="button" class="layui-btn layui-btn-sm">样式1</button>
+      <button type="button" class="layui-btn layui-btn-sm">样式2</button>
+      <button type="button" class="layui-btn layui-btn-sm">样式3</button>
+    </div>
+  </div>
+</div>
+<script>
+
+  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYTQ2ZjdjNS1jM2E0LTQ1M2EtOWM0My1mODMzNzY3YjYzY2YiLCJpZCI6MjkzMjcsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTE5NDIzNjB9.RzKlVTVDTQ9r7cqCo-PDydgUh8Frgw0Erul_BVxiS9c';
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  function sky1() {
+    viewer.scene.skyBox = d3kit.setOneSkyBox();
+  }
+
+  function sky2() {
+    viewer.scene.skyBox = d3kit.setTwoSkyBox();
+  }
+  function sky3() {
+    viewer.scene.skyBox = d3kit.setThreeSkyBox();
+  }
+
+  $('.layui-card-body button').on('click', function () {
+    let text = $(this).text()
+    if (text) {
+      switch (text) {
+        case '样式1': sky1(); break;
+        case '样式2': sky2(); break;
+        case '样式3': sky3(); break;
+      }
+    }
+  })
+
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

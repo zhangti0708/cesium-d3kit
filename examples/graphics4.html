@@ -1,0 +1,92 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 19:56:31
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  let tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }))
+  tileset.style = new Cesium.Cesium3DTileStyle({
+    color: {
+      conditions: [
+        ['${height} >= 300', 'rgba(45, 0, 75, 0.6)'],
+        ['${height} >= 200', 'rgba(102, 71, 151, 0.6)'],
+        ['${height} >= 100', 'rgba(170, 162, 204, 0.6)'],
+        ['${height} >= 50', 'rgba(224, 226, 238, 0.6)'],
+        ['${height} >= 25', 'rgba(252, 230, 200, 0.6)'],
+        ['${height} >= 10', 'rgba(248, 176, 87, 0.6)'],
+        ['${height} >= 5', 'rgba(198, 106, 11, 0.6)'],
+        ['true', 'rgba(127, 59, 8, 0.6)']
+      ]
+    }
+  });
+  d3kit.flyTo({
+    position: {x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292},
+    orientation: {
+      heading: Cesium.Math.toRadians(1.0114629015290062),
+      pitch: Cesium.Math.toRadians(-23.53661660731824),
+      roll: Cesium.Math.toRadians(0.00324596311071617)
+    }
+  })
+  var ellipse = d3kit.computeEllipseEdgePositions({
+    semiMinorAxis: 500,
+    semiMajorAxis: 500,
+    rotation: 0,
+    center:  Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
+    granularity: Math.PI / 150.0//间隔
+  })
+
+  let positions = [], index = 0
+  for (let i = 0; i < ellipse.outerPositions.length; i += 3) {
+    let cartesian = new Cesium.Cartesian3(ellipse.outerPositions[i], ellipse.outerPositions[i + 1], ellipse.outerPositions[i + 2]);
+    positions.push(cartesian)
+  }
+  d3kit.craeteRotatePlaneGraphics({
+    positions: positions,
+    center:  Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
+    image: 'data/images/Textures/b2.png',
+    dimensions: new Cesium.Cartesian2(200.0, 100.0),
+  })
+
+  setTimeout(() => {
+    d3kit.craeteRotatePlaneGraphics({
+      positions: positions,
+      center:  Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
+      image: 'data/images/Textures/b4.png',
+      dimensions: new Cesium.Cartesian2(200.0, 100.0),
+    })
+
+    setTimeout(() => {
+      d3kit.craeteRotatePlaneGraphics({
+        positions: positions,
+        center:  Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
+        image: 'data/images/Textures/g_1_t_0.png',
+        dimensions: new Cesium.Cartesian2(200.0, 100.0),
+      })
+
+      setTimeout(() => {
+        d3kit.craeteRotatePlaneGraphics({
+          positions: positions,
+          center:  Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 50),
+          image: 'data/images/Textures/movingRiver.png',
+          dimensions: new Cesium.Cartesian2(200.0, 100.0),
+        })
+      }, 1000)
+    }, 1200)
+  }, 1500)
+</script>

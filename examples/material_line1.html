@@ -1,0 +1,83 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-05-21 22:03:05
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 18:17:45
+-->
+<div id="viewer-container"></div>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var colors = [
+    new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
+    new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
+    new Cesium.Color(221 / 255, 221 / 255, 221 / 255, 1)
+  ];
+
+  var MaterialLineImage = [
+    'data/images/Textures/ArrowOpacity.png',
+    'data/images/Textures/ArrowTransparent.png',
+    'data/images/Textures/DataTransLine.png',
+    'data/images/Textures/DotTransparent.png',
+    'data/images/Textures/LinkPulse.png',
+    'data/images/Textures/meteor_01.png',
+    'data/images/Textures/Trail.png',
+    'data/images/Textures/Trail1.png',
+  ]
+
+  function getCustomMaterialLine(image, color) {
+    return d3kit.getCustomMaterialLine({
+      image: image,
+      color: color,
+      duration: 2000
+    })
+  }
+  
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+    viewer.flyTo(tileset)
+    var startPoint = Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988)
+
+    for (var i = 0, len = 8; i < len; i++) {
+
+      var endPoint = Cesium.Cartesian3.fromDegrees((Math.random() / 100) + 104.081701757991, (Math.random() / 100) + 30.627042558105988);
+
+      var positions = d3kit.getLinkedPointList(startPoint, endPoint, 100000, 50);
+
+      var glowingLine = viewer.entities.add({
+        polyline: {
+          positions: positions,
+          width: 5,
+          material: getCustomMaterialLine(MaterialLineImage[i], colors[i % 3]),
+        }
+      });
+    }
+  });
+</script>

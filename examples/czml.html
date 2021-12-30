@@ -1,0 +1,51 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:08:38
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.GoogleImageryProvider({
+    style: 'img'
+  }));
+
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = 999999999.0
+  viewer.dataSources.add(Cesium.CzmlDataSource.load('data/file/beidou.czml'))
+  viewer.scene.skyBox = d3kit.setOneSkyBox();
+  viewer.scene.globe.enableLighting = true;
+
+  let mapGrid = new Cesium.GridImageryProvider();
+  let layerGrid = viewer.imageryLayers.addImageryProvider(mapGrid)
+  viewer.imageryLayers.raiseToTop(layerGrid)
+
+  let _rota = Date.now();
+  function rotate() {
+    let a = .1;
+    let t = Date.now();
+    let n = (t - _rota) / 1e3;
+    _rota = t;
+    viewer.scene.camera.rotate(Cesium.Cartesian3.UNIT_Z, -a * n);
+  }
+  viewer.clock.onTick.addEventListener(rotate);
+  setTimeout(() => {
+    viewer.delegate.clock.onTick.removeEventListener(rotate);
+  }, 2000000)
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

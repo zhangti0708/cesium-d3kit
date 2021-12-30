@@ -1,0 +1,160 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:55:06
+ -->
+<div id="viewer-container"></div>
+<div class="heatmap" style="overflow: hidden; width: 840px;height: 400px;">
+  <div class="heatmap-canvas" width="50%" height="25%">
+  </div>
+</div>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", {
+    shouldAnimate: true,
+    useDefaultRenderLoop: true,
+    infoBox: false,
+    contextOptions: {
+      webgl: {
+        alpha: false,
+        antialias: true,
+        preserveDrawingBuffer: true,
+        failIfMajorPerformanceCaveat: false,
+        depth: true,
+        stencil: false,
+        anialias: false
+      },
+    }
+  });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  viewer.scene.skyBox = d3kit.setTwoGroundSkyBox()
+
+  viewer.scene.shadowMap.darkness = 1.275;
+  //设置环境光
+  viewer.scene.lightSource.ambientLightColor = new Cesium.Color(0.3, 0.3, 0.3, 1);
+
+  //深度检测
+  // this._scene.globe.depthTestAgainstTerrain = false;
+
+  //地面调节
+  //this._scene.globe.baseColor = Cesium.Color.BLACK;
+  //this._scene.globe.globeAlpha = 0.1;
+  viewer.scene.undergroundMode = true;
+  viewer.scene.terrainProvider.isCreateSkirt = false;
+
+  //调节场景环境
+  viewer.scene.sun.show = false;
+  viewer.scene.moon.show = false;
+  // this._scene.skyBox.show = false;
+  viewer.scene.skyAtmosphere.show = false;
+  viewer.scene.fxaa = true;
+
+  //开启颜色校正
+  viewer.scene.colorCorrection.show = false;
+  viewer.scene.colorCorrection.saturation = 3.1;
+  viewer.scene.colorCorrection.brightness = 1.8;
+  viewer.scene.colorCorrection.contrast = 1.2;
+  viewer.scene.colorCorrection.hue = 0;
+
+  //开启泛光和HDR
+  viewer.scene.bloomEffect.show = false;
+  viewer.scene.hdrEnabled = true;
+  viewer.scene.bloomEffect.threshold = 1;
+  viewer.scene.bloomEffect.bloomIntensity = 2;
+
+  //最大距离
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = 5000.0
+
+  var groundPromise = viewer.scene.addS3MTilesLayerByScp('http://www.supermapol.com/realspace/services/3D-WebGLCBD/rest/realspace/datas/Tree@%E6%96%B0CBD/config', {
+    name: 'ground'
+  }),
+    buildPromise = viewer.scene.addS3MTilesLayerByScp('http://www.supermapol.com/realspace/services/3D-WebGLCBD/rest/realspace/datas/Ground_1@%E6%96%B0CBD/config', {
+      name: 'build'
+    }),
+    lakePromise = viewer.scene.addS3MTilesLayerByScp('http://www.supermapol.com/realspace/services/3D-WebGLCBD/rest/realspace/datas/Ground_2@%E6%96%B0CBD/config', {
+      name: 'lake'
+    }),
+    treePromise = viewer.scene.addS3MTilesLayerByScp('http://www.supermapol.com/realspace/services/3D-WebGLCBD/rest/realspace/datas/Building@%E6%96%B0CBD/config', {
+      name: 'tree'
+    });
+  Cesium.when.all([groundPromise, buildPromise, lakePromise, treePromise], (layers) => {
+    for (var i = 0; i < layers.length; i++) {
+      layers[i].selectEnabled = false;
+    }
+    d3kit.createSuperMapHeatMaps()
+
+    d3kit.setView({
+      position: { x: -2180840.640119748, y: 4381647.215317032, z: 4091216.503229185 },
+      orientation: {
+        heading: Cesium.Math.toRadians(356.76499726379865),
+        pitch: Cesium.Math.toRadians(-22.735599006353922),
+        roll: Cesium.Math.toRadians(0.00133659048757427)
+      }
+    });
+
+    d3kit.setDirectionalLight(
+      new Cesium.Cartesian3.fromDegrees(116.261209157595, 39.3042238956531, 480),
+      {
+        targetPosition: new Cesium.Cartesian3.fromDegrees(116.261209157595, 39.3042238956531, 430),
+        color: new Cesium.Color(1.0, 1.0, 1.0, 1),
+        intensity: 0.55
+      }
+    )
+
+
+    let positions = [
+      { x: -2180708.6506311474, y: 4379364.169500164, z: 4092280.6603018134 },
+      { x: -2180302.3152536373, y: 4379885.874918468, z: 4091890.951623252 }
+    ]
+    let heatMapImgName = []
+    let mycanvas = document.getElementsByClassName("heatmap-canvas"),
+      imgData = mycanvas[1].toDataURL("image/png"),
+      img = new Image();
+    img.src = imgData;
+    img.onload = () => {
+      for (let layer of layers) {
+        let imgName = 'heat-map' + Date.now();
+        layer.addOverlayImage({
+          bounds: Cesium.Rectangle.fromCartesianArray(positions),
+          name: imgName,
+          image: img
+        });
+
+        heatMapImgName.push(imgName)
+      }
+    }
+    d3kit.flyTo({
+      position: { x: -2180904.6282126824, y: 4380458.74732572, z: 4092896.683734781 },
+      orientation: {
+        heading: Cesium.Math.toRadians(351.1777045820927),
+        pitch: Cesium.Math.toRadians(-89.98989978846859),
+        roll: Cesium.Math.toRadians(0)
+      },
+      duration: 3,
+      callback: () => {
+        d3kit.flyTo({
+          position: { x: -2180933.1599555216, y: 4379595.243820803, z: 4092228.6618603463 },
+          orientation: {
+            heading: Cesium.Math.toRadians(264.65979689585066),
+            pitch: Cesium.Math.toRadians(-29.153220705531837),
+            roll: Cesium.Math.toRadians(0.00013154412642876905)
+          },
+          duration: 3,
+          callback: () => {
+
+          }
+        })
+      }
+    })
+
+
+  });
+</script>

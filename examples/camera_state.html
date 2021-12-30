@@ -1,0 +1,56 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:42:24
+-->
+<div id="viewer-container"></div>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">相机位置</div>
+  <div class="layui-card-body" id="msg_position">
+  </div>
+</div>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  //初始化
+  let position = d3kit.getCameraPosition()
+  document.getElementById('msg_position').innerHTML =
+    `<p>lon: ` + position.lon + `</p>
+        <p>lat: `+ position.lat + `</p>
+        <p>alt: `+ position.height + `</p>
+        <p>heading: `+ position.heading + `</p>
+        <p>pitch: `+ position.pitch + `</p>
+        <p>roll: `+ position.roll + `</p>`;
+
+  //修改
+  viewer.scene.camera.moveEnd.addEventListener((move) => {
+    let position = d3kit.getCameraPosition()
+    document.getElementById('msg_position').innerHTML =
+      `<p>lon: ` + position.lon + `</p>
+        <p>lat: `+ position.lat + `</p>
+        <p>alt: `+ position.height + `</p>
+        <p>heading: `+ position.heading + `</p>
+        <p>pitch: `+ position.pitch + `</p>
+        <p>roll: `+ position.roll + `</p>`;
+
+  });
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

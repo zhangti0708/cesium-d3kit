@@ -1,0 +1,93 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-07-24 17:53:02
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 19:15:02
+-->
+<div id="viewer-container"></div>
+<link href="libs/utils.css" rel="stylesheet" />
+<style>
+  /* .ex-box {
+    position: absolute;
+    top: 0;
+    left: 50px;
+    right: 0;
+    bottom: 100px;
+    width: 200px;
+    height: 300px;
+    background: url("data/images/file/div2.png") no-repeat;
+    color: #fff;
+  }
+
+  .ys-css3-box {
+    pointer-events: none;
+  } */
+  .ex-box {
+    width: 200px;
+    height: 100%;
+    background: url("data/images/Textures/layer_border.png") no-repeat;
+    color: #fff;
+    padding: 8px 20px;
+  }
+
+  .ys-css3-box {
+    pointer-events: none;
+  }
+  #box4{
+    font-size: 20px;
+    color: orange;
+  }
+</style>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    viewer.flyTo(tileset)
+
+    let css3Renderer = new Cesium.Css3Renderer([{
+      id: 'box4',
+      position: [104.08985268964015, 30.635443158056148, 50.0],
+      element: `<div class="ys-css3-box ex-box" id="box4">xxx 信息点</div>`,
+      offset: [10, 10]
+    }], true)
+
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

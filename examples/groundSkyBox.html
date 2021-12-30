@@ -1,0 +1,100 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-28 19:25:22
+ -->
+ <div id="viewer-container"></div>
+ <div class="layui-card">
+   <div class="layui-card-header" style="color:white">近景天空盒</div>
+   <div class="layui-card-body">
+     <div>加载:
+       <button type="button" class="layui-btn layui-btn-sm">晴天</button>
+       <button type="button" class="layui-btn layui-btn-sm">晚霞</button>
+       <button type="button" class="layui-btn layui-btn-sm">蓝天</button>
+     </div>
+   </div>
+ </div>
+ <script>
+   let skyObj = undefined;
+
+   let viewer = new Cesium.Viewer("viewer-container", { infoBox: false });
+
+   let d3kit = new Cesium.D3Kit(viewer)
+
+   let layer = viewer.imageryLayers.addImageryProvider(new Cesium.GoogleImageryProvider({
+     style: 'img'
+   }));
+
+   function sky1() {
+     skyObj = d3kit.setOneGroundSkyBox();
+     viewer.scene.skyBox = skyObj
+     viewer.scene.skyAtmosphere.show = false
+   }
+
+
+   function sky2() {
+     skyObj = d3kit.setTwoGroundSkyBox()
+     viewer.scene.skyBox = skyObj
+     viewer.scene.skyAtmosphere.show = false
+   }
+   function sky3() {
+     skyObj = d3kit.setThreeGroundSkyBox();
+     viewer.scene.skyBox = skyObj
+     viewer.scene.skyAtmosphere.show = false
+   }
+   let flag = true;
+   viewer.scene.camera.moveEnd.addEventListener((move) => {
+     let position = d3kit.getCameraPosition()
+     if( !position.height) return
+     if (100000 <= position.height) {
+       if (flag) {
+         viewer.scene.skyBox = d3kit.setOneSkyBox();
+         viewer.scene.skyAtmosphere.show = true
+         flag = false
+       }
+     } else if (100000 > position.height) {
+       if (!flag) {
+         viewer.scene.skyBox = skyObj
+         viewer.scene.skyAtmosphere.show = false
+         flag = true
+       }
+
+     }
+   });
+
+   $('.layui-card-body button').on('click', function () {
+     let text = $(this).text()
+     if (text) {
+       switch (text) {
+         case '晴天': sky1(); break;
+         case '晚霞': sky2(); break;
+         case '蓝天': sky3(); break;
+       }
+     }
+   });
+
+   d3kit.setView({
+     position: Cesium.Cartesian3.fromDegrees(120.380788, 31.066719, 12136),
+     orientation: {
+       heading: Cesium.Math.toRadians(0.0),
+       pitch: Cesium.Math.toRadians(-30),
+       roll: Cesium.Math.toRadians(0.0)
+     },
+   })
+
+   sky1()
+
+ </script>
+ <style>
+   .layui-card {
+     position: absolute;
+     top: 10px;
+     left: 5px;
+     background-color: #ffffff6b;
+     box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+     color: white
+   }
+ </style>

@@ -1,0 +1,30 @@
+<div id="viewer-container"></div>
+<script>
+  this._viewer = new Cesium.Viewer("viewer-container", { infoBox: false });
+
+  this._d3kit = new Cesium.D3Kit(this._viewer)
+  let layer = this._viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({}));
+  layer.name = '电子', layer.id = 'layer1';
+
+  let layer2 = this._viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'midnight'
+  }));
+  layer2.name = '午夜蓝', layer2.id = 'layer2', layer2.show = false;
+
+  let layer3 = this._viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  layer3.name = '黑夜', layer3.id = 'layer3', layer3.show = false;
+
+  let layer4 = this._viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'googlelite'
+  }));
+  layer4.name = '精简', layer4.id = 'layer4', layer4.show = false;
+
+  let layer5 = this._viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'redalert'
+  }));
+  layer5.name = '红色警戒', layer5.id = 'layer5', layer5.show = false;
+
+  this._d3kit.showLayerSwitchPanel([layer, layer2, layer3, layer4, layer5])
+</script>

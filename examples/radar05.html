@@ -1,0 +1,240 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-28 13:11:15
+ -->
+<div id="viewer-container"></div>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">调整</div>
+  <div class="layui-card-body">
+    <div>
+      X平移 +:
+      <div id="slideTest1" class="demo-slider"></div>
+
+      Y平移 +:
+      <div id="slideTest2" class="demo-slider"></div>
+
+      Z平移 +:
+      <div id="slideTest3" class="demo-slider"></div>
+
+      X平移 -:
+      <div id="slideTest4" class="demo-slider"></div>
+
+      Y平移 -:
+      <div id="slideTest5" class="demo-slider"></div>
+
+      Z平移 -:
+      <div id="slideTest6" class="demo-slider"></div>
+      <br>
+      X旋转 +:
+      <div id="slideTest7" class="demo-slider"></div>
+
+      Y旋转 +:
+      <div id="slideTest8" class="demo-slider"></div>
+
+      Z旋转 +:
+      <div id="slideTest9" class="demo-slider"></div>
+
+      X旋转 -:
+      <div id="slideTest10" class="demo-slider"></div>
+
+      Y旋转 -:
+      <div id="slideTest11" class="demo-slider"></div>
+
+      Z旋转 -:
+      <div id="slideTest12" class="demo-slider"></div>
+    </div>
+  </div>
+</div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer, { loadCustomCesiumPlugin: true })
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  let sensorEntity = undefined, l = Cesium.Cartesian3.fromDegrees(117.224, 31.819, 128)
+    , roll = 0, pitch = 40, heading = 0;
+
+  let Probing = new Cesium.ProbingPrimitive({
+    center: l
+  })
+
+  d3kit.flyTo({
+    position: { x: -1577100.7186109242, y: 5851821.270502206, z: 3447255.476239793 },
+    orientation: {
+      heading: Cesium.Math.toRadians(78.17580384898336),
+      pitch: Cesium.Math.toRadians(-29.981992162453782),
+      roll: Cesium.Math.toRadians(0.005676460617140785)
+    }
+  });
+  function initViewer() {
+
+    layui.use('slider', function () {
+      var $ = layui.$
+        , slider = layui.slider;
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest1'
+        , max: 1000
+        , min: 0
+        , value: 0 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(value, 0, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest2'
+        , max: 1000
+        , min: 0
+        , value: 0 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, value, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest3'
+        , max: 1000
+        , min: 0
+        , value: 0 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, value))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest4'
+        , max: 0
+        , min: -1000
+        , value: -1000 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(value, 0, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest5'
+        , max: 0
+        , min: -1000
+        , value: -1000 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, value, 0))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest6'
+        , max: 0
+        , min: -1000
+        , value: -1000 //初始值
+        , change: function (value) {
+          const translation = Cesium.Matrix4.fromTranslation(new Cesium.Cartesian3(0, 0, value))
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, translation, Probing._radar.modelMatrix)
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest7'
+        , max: 3.0
+        , min: 1.0
+        , value: 1.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest8'
+        , max: 3.0
+        , min: 1.0
+        , value: 1.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest9'
+        , max: 3.0
+        , min: 1.0
+        , value: 1.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest10'
+        , max: -1.0
+        , min: -3.0
+        , value: -3.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationX(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest11'
+        , max: -1.0
+        , min: -3.0
+        , value: -3.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationY(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest12'
+        , max: -1.0
+        , min: -3.0
+        , value: -3.0 //初始值
+        , change: function (value) {
+          const angel = Cesium.Matrix3.fromRotationZ(Cesium.Math.toRadians(value))
+          const rotation = Cesium.Matrix4.fromRotationTranslation(angel)
+          Cesium.Matrix4.multiply(Probing._radar.modelMatrix, rotation, Probing._radar.modelMatrix)
+        }
+      });
+
+    });
+  }
+  initViewer()
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    width: 250px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

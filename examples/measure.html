@@ -1,0 +1,83 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-07-22 22:45:20
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 19:46:23
+-->
+<div id="viewer-container"></div>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">量测面板</div>
+  <div class="layui-card-body">
+    <div>数据:
+      <button type="button" class="layui-btn layui-btn-normal layui-btn-sm">加载3dtileset</button>
+    </div>
+    <br>
+    <div>量测:
+      <button type="button" class="layui-btn layui-btn-sm">空间距离</button>
+      <button type="button" class="layui-btn layui-btn-sm">空间面积</button>
+      <button type="button" class="layui-btn layui-btn-sm">三角量测</button>
+      <button type="button" class="layui-btn layui-btn-disabled layui-btn-sm">空间范围</button>
+    </div>
+    <br>
+    <div>清除:
+      <button type="button" class="layui-btn layui-btn-primary layui-btn-sm">清除量测</button>
+    </div>
+  </div>
+</div>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    viewer.flyTo(tileset)
+
+    $('.layui-card-body button').on('click', function () {
+      let text = $(this).text()
+      if (text) {
+        switch (text) {
+          case '空间距离': d3kit.drawLineGraphics({ measure: true, callback: () => { } }); break;
+          case '空间面积': d3kit.drawPolygonGraphics({ measure: true, callback: () => { } }); break;
+          case '三角量测': d3kit.drawTrianglesGraphics({ measure: true, callback: () => { } }); break;
+          case '清除量测': d3kit._drawLayer.entities.removeAll(); break;
+        }
+      }
+    })
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

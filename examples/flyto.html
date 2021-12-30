@@ -1,0 +1,397 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:08:38
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJlYTQ2ZjdjNS1jM2E0LTQ1M2EtOWM0My1mODMzNzY3YjYzY2YiLCJpZCI6MjkzMjcsInNjb3BlcyI6WyJhc3IiLCJnYyJdLCJpYXQiOjE1OTE5NDIzNjB9.RzKlVTVDTQ9r7cqCo-PDydgUh8Frgw0Erul_BVxiS9c';
+
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    // temp_url: 'http://172.16.77.103:8219/tile?x={x}&y={y}&z={z}',
+    style: 'dark'
+  }));
+
+  // viewer.imageryLayers.addImageryProvider(new Cesium.MapboxImageryProvider({
+  //   mapId: 'mapbox.dark'
+  // }))
+  viewer.scene.skyBox = d3kit.setTwoGroundSkyBox()
+  viewer.scene.sun.show = false;
+  // viewer.scene.sunColor = new Cesium.Color(1.8, 1.85, 5.0)
+  viewer.scene.moon.show = false;
+  viewer.scene.skyAtmosphere.show = false;
+  viewer.scene.fxaa = true;
+  viewer.scene.globe.depthTestAgainstTerrain = true;
+  viewer.scene.undergroundMode = false;
+  viewer.scene.terrainProvider.isCreateSkirt = false;
+  viewer.scene.screenSpaceCameraController.minimumZoomDistance = 100;
+  viewer.scene.screenSpaceCameraController.maximumZoomDistance = 10000;
+  viewer.scene.highDynamicRange = true;
+  viewer.scene.gamma = 0.9;
+  let tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: '/beijingshp2/tileset.json'
+  }))
+
+
+  let colors = [
+    new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
+    new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
+    new Cesium.Color(221 / 255, 221 / 255, 221 / 255, 1)
+  ];
+  // 自定义材质线
+  let MaterialLineImage = [
+    'data/images/Textures/ArrowOpacity.png',
+    'data/images/Textures/ArrowTransparent.png',
+    'data/images/Textures/DataTransLine.png',
+    'data/images/Textures/DotTransparent.png',
+    'data/images/Textures/LinkPulse.png',
+    'data/images/Textures/meteor_01.png',
+    'data/images/Textures/Trail.png',
+    'data/images/Textures/Trail1.png',
+  ]
+
+  let getDefCustomMaterialLine = (image, color) => {
+    return d3kit.getCustomMaterialLine({
+      image: image,
+      color: color,
+      duration: 1500
+    })
+  }
+  // 创建光锥
+  let createTetrahedrod = () => {
+
+    let Tetrahedrod =
+      viewer.scene.primitives.add(new Cesium.TetrahedronPrimitive({
+        position: Cesium.Cartesian3.fromDegrees(116.32669032008344, 39.96775346965087, 180.0),
+        color: Cesium.Color.BLUE,
+        distance: 10.0,
+        speed: 2.0,
+        scale: new Cesium.Cartesian3(30, 30, 50)
+      }));
+    Tetrahedrod.startAnimate()
+
+
+    let Tetrahedrod2 =
+      viewer.scene.primitives.add(new Cesium.TetrahedronPrimitive({
+        position: Cesium.Cartesian3.fromDegrees(116.3399086564082, 39.99606929716693, 180.0),
+        color: Cesium.Color.BLUE,
+        distance: 10.0,
+        speed: 2.0,
+        scale: new Cesium.Cartesian3(30, 30, 50)
+      }));
+    Tetrahedrod2.startAnimate()
+
+  }
+
+  // 创建飞线
+  let createFlyLine = (positions) => {
+
+    let startPoint = { lng: 116.32669032008344, lat: 39.96775346965087, alt: 140.0 }
+    let lines = [
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.33154263102534, lat: 39.96117826766343, alt: 107.41160361468306 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.32028605475644, lat: 39.9584739417466, alt: 35.36961514450832 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.31258984725199, lat: 39.970035111340714, alt: 131.06627747559673 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.30677811423965, lat: 39.97827645538983, alt: 106.82987908776786 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.3286147671444, lat: 39.97467916585302, alt: 161.09797960139747 }]
+      ),
+
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.33377489333093, lat: 39.970667874765255, alt: 143.2253832930117 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [startPoint, { lng: 116.33651958705512, lat: 39.976608723199014, alt: 53.09172756180144 }]
+      )
+    ]
+    for (let i in lines) {
+
+      var positions = d3kit.getLinkedPointList(lines[i][0], lines[i][1], 30000, 50);
+      viewer.entities.add({
+        polyline: {
+          positions: positions,
+          width: 8,
+          material: new Cesium.PolylineCityLinkMaterialProperty({
+            color: Cesium.Color.GREEN,
+            duration: 2000
+          }),
+        }
+      });
+      // 圆底
+      d3kit.createPointsGraphics({
+        positions: [lines[i][1]],
+        billboard: {
+          b_img: 'data/images/Textures/poi2.png',
+          b_width: 20,
+          b_height: 60,
+          b_scale: 3
+        }
+      })
+    }
+  }
+
+  // 创建动态圆
+  let createDynamicCricle = () => {
+
+    d3kit.craeteDynamicCricleGraphics({
+      center: { lng: 116.32669032008344, lat: 39.96775346965087, alt: 1.0 },
+      radius: 400,
+      scale: 800
+    })
+  }
+
+  // 创建射线
+  let createHeightLine = () => {
+
+    let lines = [
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.28146125319128, lat: 39.99908216553361, alt: 1.0 }, { lng: 116.28146125319128, lat: 39.99908216553361, alt: 10000 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.35470272579064, lat: 39.989831151249106, alt: 1.0 }, { lng: 116.35470272579064, lat: 39.989831151249106, alt: 10000 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.322050604779, lat: 39.97001536572826, alt: 1.0 }, { lng: 116.322050604779, lat: 39.97001536572826, alt: 10000 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.31247288668037, lat: 39.95836503415772, alt: 1.0 }, { lng: 116.31247288668037, lat: 39.95836503415772, alt: 10000 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.34760483514621, lat: 39.96139095695356, alt: 1.0 }, { lng: 116.34760483514621, lat: 39.96139095695356, alt: 10000 }]
+      ),
+
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.35298388900677, lat: 39.974985113274975, alt: 1.0 }, { lng: 116.35298388900677, lat: 39.974985113274975, alt: 10000 }]
+      ),
+      d3kit.transformWGS84ArrayToCartesianArray(
+        [{ lng: 116.3321640099797, lat: 39.99882512011435, alt: 1.0 }, { lng: 116.3321640099797, lat: 39.99882512011435, alt: 10000 }]
+      )
+    ]
+
+    lines.forEach((line, index) => {
+
+      viewer.entities.add({
+        polyline: {
+          positions: line,
+          width: 4,
+          material: getDefCustomMaterialLine(MaterialLineImage[5], colors[index % 3])
+        }
+      });
+    })
+  }
+
+  // 创建圆形扫描
+  let createCircleScanEffect = () => {
+
+    d3kit.setCircleScanEffect({
+      position: Cesium.Cartesian3.fromDegrees(116.32669032008344, 39.96775346965087, 5.0),
+      color: Cesium.Color.MEDIUMTURQUOISE.withAlpha(0.5),
+      duration: 5000,
+      border: 50,
+      radius: 8000
+    })
+  }
+
+  // 创建标牌
+  let createBillboard = () => {
+
+    let entity = d3kit.createGraphics()
+    entity.position = Cesium.Cartesian3.fromDegrees(116.32669032008344, 39.96775346965087, 400.0)
+    entity.plane = d3kit.getPlaneGraphics({
+      plane: new Cesium.Plane(Cesium.Cartesian3.UNIT_X, 0.0),
+      material: new Cesium.ImageMaterialProperty({
+        image: 'data/images/Textures/billboard2.png',
+        transparent: true
+      })
+    })
+
+    viewer.entities.add(entity)
+  }
+
+  // 加载道路面
+  let createRordLine = () => {
+
+    var promise = Cesium.GeoJsonDataSource.load('data/file/road.geojson');
+    promise.then(function (dataSource) {
+      viewer.dataSources.add(dataSource);
+      var entities = dataSource.entities.values;
+      for (var o = 0; o < entities.length; o++) {
+        var r = entities[o];
+        r.nameID = o;
+        r.polygon.width = 3;
+        r.polygon.extrudedHeight = 0.1
+        r.polygon.material = Cesium.Color.MEDIUMTURQUOISE.withAlpha(0.5)
+      }
+    })
+  }
+
+  // 创建poi点
+  let createPoiData = () => {
+    let positions = [
+      Cesium.Cartesian3.fromDegrees(116.29900603542943, 39.96976486650886, 0),
+      Cesium.Cartesian3.fromDegrees(116.32909806411666, 39.9576322491703, 0),
+      Cesium.Cartesian3.fromDegrees(116.3356308946873, 39.96208766092512, 0),
+      Cesium.Cartesian3.fromDegrees(116.33794011297483, 39.96625467368985, 0),
+      Cesium.Cartesian3.fromDegrees(116.33832799058237, 39.96932788851325, 0),
+      Cesium.Cartesian3.fromDegrees(116.33708344442097, 39.97530293950722, 0),
+      Cesium.Cartesian3.fromDegrees(116.3349183540067, 39.978734989355445, 0),
+      Cesium.Cartesian3.fromDegrees(116.32692705550099, 39.97851264961627, 0),
+      Cesium.Cartesian3.fromDegrees(116.31543285646232, 39.973452266756766, 0),
+      Cesium.Cartesian3.fromDegrees(116.31141527213342, 39.96864433082615, 0)
+    ]
+    d3kit.createPointsGraphics({
+      positions: positions,
+      billboard: {
+        b_img: 'data/images/Textures/poi.png',
+        b_width: 20,
+        b_height: 80,
+        b_scale: 3
+      }
+    })
+  }
+
+  // 加载雷达
+  let createRadarModel = () => {
+
+    let material = d3kit.getCustomMaterialWall({
+      image: 'data/images/Textures/test1.png',
+      freely: 'cross',
+      direction: '+',
+      count: 1.0,
+      color: Cesium.Color.BLUE,
+      duration: 2000
+    })
+    var ellipsoid = new Cesium.EllipsoidGraphics({
+      radii: new Cesium.Cartesian3(500, 500, 500), //单位 米
+      material: material,
+      maximumCone: Cesium.Math.PI_OVER_TWO,
+    })
+    var position = Cesium.Cartesian3.fromDegrees(116.28146125319128, 39.99908216553361)
+    let three1 = viewer.entities.add({
+      name: 'aaaaa',
+      position: position,
+      ellipsoid: ellipsoid
+    })
+  }
+
+  // 创建围栏
+  let createWallModel = () => {
+
+    let material = d3kit.getCustomMaterialWall({
+      image: 'data/images/Textures/b2.png',
+      freely: 'vertical',
+      direction: '+',
+      count: 2,
+      color: Cesium.Color.RED,
+      duration: 2000
+    })
+    let three = viewer.entities.add({
+      name: 'aaaaa',
+      wall: {
+        positions: Cesium.Cartesian3.fromDegreesArrayHeights([
+          116.34713010655757, 39.99226979250184, 150.0,
+          116.3319615150461, 39.99162755705992, 150.0,
+          116.3322080335777, 39.99908652636848, 150.0,
+          116.34672687835422, 39.99936091832157, 150.0,
+          116.34713010655757, 39.99226979250184, 150.0,
+        ]),
+        material: material
+      }
+    })
+  }
+
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${floor} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${floor} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${floor} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${floor} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${floor} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${floor} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${floor} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    createTetrahedrod()
+    createDynamicCricle()
+    createFlyLine()
+    createHeightLine()
+    createCircleScanEffect()
+    createBillboard()
+    // createRordLine()
+    createRadarModel()
+    createWallModel()
+    createPoiData()
+
+    // var ellipse = d3kit.computeEllipseEdgePositions({
+    //   semiMinorAxis: 80,
+    //   semiMajorAxis: 80,
+    //   rotation: 0,
+    //   center: Cesium.Cartesian3.fromDegrees(116.30544331774857, 39.96399873686899, 100.0),
+    //   granularity: Math.PI / 150.0//间隔
+    // })
+
+    // let positions = [], index = 0
+    // for (let i = 0; i < ellipse.outerPositions.length; i += 3) {
+    //   let cartesian = new Cesium.Cartesian3(ellipse.outerPositions[i], ellipse.outerPositions[i + 1], ellipse.outerPositions[i + 2]);
+    //   positions.push(cartesian)
+    // }
+
+    d3kit.setView({
+      position: { x: -2172934.5706393262, y: 4389011.902432475, z: 4073679.2481707376 },
+      orientation: {
+        heading: Cesium.Math.toRadians(339.4926617087031),
+        pitch: Cesium.Math.toRadians(-10.888859456945687),
+        roll: Cesium.Math.toRadians(359.9324191953588)
+      }
+    })
+    // handle
+    viewer.scene.camera.moveEnd.addEventListener((move) => {
+
+      console.log(d3kit.getCameraPosition())
+    });
+    let handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas)
+    handler.setInputAction((movement) => {
+
+      console.log(d3kit.transformCartesianToWGS84(viewer.scene.camera.pickEllipsoid(movement.position, viewer.scene.globe.ellipsoid)))
+
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+
+  })
+
+
+
+
+
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

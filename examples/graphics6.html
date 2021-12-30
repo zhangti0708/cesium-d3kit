@@ -1,0 +1,56 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:58:26
+ -->
+<div id="viewer-container"></div>
+<video id="videoBox" style="display: none" muted autoplay loop crossorigin controls>
+  <source src="data/file/cs.mp4" type="video/mp4">
+</video>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  let tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }))
+  tileset.style = new Cesium.Cesium3DTileStyle({
+    color: {
+      conditions: [
+        ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+        ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+        ["true", "rgb(0, 149, 251, 0.3)"]
+      ]
+    }
+  });
+  d3kit.flyTo({
+    position: {x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292},
+    orientation: {
+      heading: Cesium.Math.toRadians(1.0114629015290062),
+      pitch: Cesium.Math.toRadians(-23.53661660731824),
+      roll: Cesium.Math.toRadians(0.00324596311071617)
+    }
+  })
+  var videoDom = document.getElementById('videoBox');
+  d3kit.createVideoPlaneGraphics({
+    position: Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 200),
+    videoElement: videoDom,
+    dimensions: new Cesium.Cartesian2(400.0, 200.0),
+  })
+
+  videoDom.play();
+</script>

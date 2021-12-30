@@ -1,0 +1,63 @@
+<div id="viewer-container"></div>
+<link href="libs/utils.css" rel="stylesheet" />
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    viewer.flyTo(tileset)
+
+    setTimeout(() => {
+      let css3Renderer = new Cesium.Css3Renderer([], true)
+      css3Renderer.addEntityLayer({
+        id: '',
+        position: [104.06417395476578, 30.636185094244944, 30.0],//高度为 boxHeightMax
+        element: `<div class='ysc-dynamic-layer ys-css3-box' id='div1'>
+               <div class='line'></div>
+               <div class='main' style="font-size:20px">
+                        <div class="" style="color:#ff9800">信息点</div>
+                       <div class=""> xx大厦 </div>
+                </div>
+           </div>`,
+        offset: [10, -250],
+        boxShow: false,
+        circleShow: false,
+      })
+    }, 3500)
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

@@ -1,0 +1,32 @@
+<div id="viewer-container"></div>
+<script>
+  this._viewer = new Cesium.Viewer("viewer-container");
+
+  this._d3kit = new Cesium.D3Kit(this._viewer)
+
+  let layer = this._viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+    url:
+      'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer'
+  }));
+  layer.name = '影像', layer.id = 'layer1';
+
+  let layer2 = this._viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+    url:
+      'https://services.arcgisonline.com/arcgis/rest/services/World_Shaded_Relief/MapServer'
+  }));
+  layer2.name = '电子', layer2.id = 'layer2', layer2.show = false;
+
+  let layer3 = this._viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+    url:
+      'https://services.arcgisonline.com/arcgis/rest/services/World_Physical_Map/MapServer'
+  }));
+  layer3.name = '地形', layer3.id = 'layer3', layer3.show = false;
+
+  let layer4 = this._viewer.imageryLayers.addImageryProvider(new Cesium.ArcGisMapServerImageryProvider({
+    url:
+      'https://services.arcgisonline.com/arcgis/rest/services/World_Terrain_Base/MapServer'
+  }));
+  layer4.name = '地形2', layer4.id = 'layer4', layer4.show = false;
+
+  this._d3kit.showLayerSwitchPanel([layer, layer2, layer3, layer4])
+</script>

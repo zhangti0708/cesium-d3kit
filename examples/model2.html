@@ -1,0 +1,36 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 17:37:17
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  let model = d3kit.createModelGraphics({
+    position: Cesium.Cartesian3.fromDegrees(125.38105869, 28.10115627),
+    m_url: 'data/model/dgl.glb'
+  })
+  d3kit.showEntityOrientationEditPanel(model)
+  viewer.flyTo(model)
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

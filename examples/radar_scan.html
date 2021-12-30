@@ -1,0 +1,62 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-22 18:23:47
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    viewer.flyTo(tileset)
+    d3kit.setRadarScanEffect({
+      id: 'radarScanA',
+      position: Cesium.Cartesian3.fromDegrees(104.08985268964015, 30.635443158056148, 10.0),
+      color: Cesium.Color.LIGHTGREEN.withAlpha(0.8),
+      duration: 2000,
+      radius: 1000,
+      border: -1,
+      width: 5.0
+    })
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

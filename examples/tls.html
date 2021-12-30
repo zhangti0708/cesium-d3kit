@@ -1,0 +1,132 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:33:26
+ -->
+<div id="viewer-container"></div>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">配置面板</div>
+  <div class="layui-card-body">
+    <div>加载3dtls:
+      <button type="button" class="layui-btn layui-btn-sm">大雁塔</button>
+      <button type="button" class="layui-btn layui-btn-sm">城市白模</button>
+      <button type="button" class="layui-btn layui-btn-sm">城市白模2</button>
+    </div>
+    <br>
+    <div>查看3dtls:
+      <button type="button" class="layui-btn layui-btn-sm" id="addlocal">添加本地</button>
+      <button type="button" class="layui-btn layui-btn-disabled layui-btn-sm">添加网络</button>
+    </div>
+    <br>
+    <div>清除:
+      <button type="button" class="layui-btn layui-btn-primary layui-btn-sm">清除</button>
+    </div>
+  </div>
+</div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  function dyt() {
+
+    viewer.flyTo(viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+      url: 'http://earthsdk.com/v/last/Apps/assets/dayanta/tileset.json'
+    })))
+  }
+
+  function bm1() {
+
+    let tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+      url: 'data/3DTiles/building/tileset.json'
+    }))
+
+
+
+    tileset.readyPromise.then(function (tileset) {
+
+      tileset.style = new Cesium.TilesetStyle({
+        color: {
+          conditions: [
+            ['${height} >= 300', 'rgba(45, 0, 75, 0.6)'],
+            ['${height} >= 200', 'rgba(102, 71, 151, 0.6)'],
+            ['${height} >= 100', 'rgba(170, 162, 204, 0.6)'],
+            ['${height} >= 50', 'rgba(224, 226, 238, 0.6)'],
+            ['${height} >= 25', 'rgba(252, 230, 200, 0.6)'],
+            ['${height} >= 10', 'rgba(248, 176, 87, 0.6)'],
+            ['${height} >= 5', 'rgba(198, 106, 11, 0.6)'],
+            ['true', 'rgba(127, 59, 8, 0.6)']
+          ]
+        }
+      });
+
+      viewer.flyTo(tileset)
+    })
+  }
+  layui.use('upload', function () {
+    var upload = layui.upload;
+
+    //执行实例
+    var uploadInst = upload.render({
+      elem: '#addlocal' //绑定元素
+      , url: '' //上传接口
+      , accept: 'file' //普通文件
+      , choose: function (obj) {
+        //将每次选择的文件追加到文件队列
+        var files = obj.pushFile();
+
+        //预读本地文件，如果是多文件，则会遍历。(不支持ie8/9)
+        obj.preview(function (index, file, result) {
+          if (file) {
+            let fileData = URL.createObjectURL(file);
+            viewer.flyTo(viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+              url: fileData
+            })))
+          }
+        });
+      }
+      , done: function (res) {
+        //上传完毕回调
+      }
+      , error: function () {
+        //请求异常回调
+      }
+    });
+  });
+  function addInter() {
+
+  }
+  function remove() {
+
+  }
+  $('.layui-card-body button').on('click', function () {
+    let text = $(this).text()
+    if (text) {
+      switch (text) {
+        case '大雁塔': dyt(); break;
+        case '城市白模': bm1(); break;
+        // case '城市白模2': bm2(); break;
+        case '添加网络': addInter(); break;
+        case '清除': remove(); break;
+      }
+    }
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

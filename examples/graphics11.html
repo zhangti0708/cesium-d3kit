@@ -1,0 +1,72 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-23 21:58:26
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  let tileset = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }))
+
+  let colors = [
+    new Cesium.Color(77 / 255, 201 / 255, 255 / 255, 1),
+    new Cesium.Color(255 / 255, 201 / 255, 38 / 255, 1),
+    new Cesium.Color(221 / 255, 221 / 255, 221 / 255, 1)
+  ];
+
+  tileset.style = new Cesium.Cesium3DTileStyle({
+    color: {
+      conditions: [
+        ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+        ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+        ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+        ["true", "rgb(0, 149, 251, 0.3)"]
+      ]
+    }
+  });
+
+  d3kit.flyTo({
+    position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
+    orientation: {
+      heading: Cesium.Math.toRadians(1.0114629015290062),
+      pitch: Cesium.Math.toRadians(-23.53661660731824),
+      roll: Cesium.Math.toRadians(0.00324596311071617)
+    }
+  })
+
+  for (let i = 0, len = 8; i < len; i++) {
+
+    let lon = (Math.random() / 100) + 104.081701757991
+    lat = (Math.random() / 100) + 30.627042558105988
+    let start = Cesium.Cartesian3.fromDegrees(lon, lat, 0)
+    let stop = Cesium.Cartesian3.fromDegrees(lon, lat, 10000)
+    viewer.entities.add({
+      polyline: {
+        positions: [start, stop],
+        width: 3,
+        material: new Cesium.PolylineCityLinkMaterialProperty({
+          color: colors[i % 3],
+          duration: 1500
+        }),
+      }
+    });
+  }
+  
+</script>

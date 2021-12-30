@@ -1,0 +1,73 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-22 17:23:03
+ -->
+<div id="viewer-container"></div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+    d3kit.flyTo({
+      position: { x: -1337132.0092982147, y: 5330611.474631115, z: 3228680.029449292 },
+      orientation: {
+        heading: Cesium.Math.toRadians(1.0114629015290062),
+        pitch: Cesium.Math.toRadians(-23.53661660731824),
+        roll: Cesium.Math.toRadians(0.00324596311071617)
+      }
+    })
+    var entity = d3kit.createGraphics()
+    entity.position = Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988, 5)
+    entity.ellipse = new Cesium.EllipseGraphics({
+      semiMajorAxis: 500,
+      semiMinorAxis: 500,
+      material: new Cesium.CircleWaveMaterialProperty({
+        color: Cesium.Color.DARKCYAN.withAlpha(0.8),
+        count: 3,
+        gradient: 0.9
+      })
+    })
+    viewer.entities.add(entity)
+  })
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>
+</body>

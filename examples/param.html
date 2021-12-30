@@ -1,0 +1,18 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-29 21:03:17
+ -->
+<div id="viewer-container"></div>
+<script>
+  this._viewer = new Cesium.Viewer("viewer-container", { infoBox: false });
+
+  this._d3kit = new Cesium.D3Kit(this._viewer)
+
+  let layer = this._viewer.imageryLayers.addImageryProvider(new Cesium.GoogleImageryProvider({}));
+
+  this._d3kit.showLayerParamPanel(layer)
+</script>

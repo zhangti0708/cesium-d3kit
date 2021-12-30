@@ -1,0 +1,135 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-03-05 03:58:30
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-05-28 13:11:15
+ -->
+<div id="viewer-container"></div>
+<script src="libs/turf.min.js"></script>
+<script src="libs/cesium-plugin.js"></script>
+<div class="layui-card">
+  <div class="layui-card-header" style="color:white">跟随锥体</div>
+  <div class="layui-card-body">
+    <div>
+      angle1:
+      <div id="slideTest1" class="demo-slider"></div>
+      <br>
+      angle2:
+      <div id="slideTest2" class="demo-slider"></div>
+      <br>
+      Heading:
+      <div id="slideTest3" class="demo-slider"></div>
+      <br>
+      Pitch:
+      <div id="slideTest4" class="demo-slider"></div>
+      <br>
+      Roll:
+      <div id="slideTest5" class="demo-slider"></div>
+    </div>
+  </div>
+</div>
+<script>
+
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer, { loadCustomCesiumPlugin: true })
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+  let sensorEntity = undefined, l = Cesium.Cartesian3.fromDegrees(117.224, 31.819, 100000)
+    , roll = 0, pitch = 0, heading = 0;
+
+  sensorEntity = d3kit.createSatelliteCoverageSimulationGraphics({
+    position: l,
+    roll: roll,
+    pitch: pitch,
+    heading: heading
+  })
+
+  d3kit.flyTo({
+    position: { x: -1577100.7186109242, y: 5851821.270502206, z: 3447255.476239793 },
+    orientation: {
+      heading: Cesium.Math.toRadians(78.17580384898336),
+      pitch: Cesium.Math.toRadians(-29.981992162453782),
+      roll: Cesium.Math.toRadians(0.005676460617140785)
+    }
+  });
+  function initViewer() {
+
+    layui.use('slider', function () {
+      var $ = layui.$
+        , slider = layui.slider;
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest1'
+        , max: 90
+        , min: 0
+        , value: 30 //初始值
+        , change: function (value) {
+          sensorEntity.angle1 = value
+        }
+      });
+
+      //定义初始值
+      slider.render({
+        elem: '#slideTest2'
+        , max: 90
+        , min: 0
+        , value: 45 //初始值
+        , change: function (value) {
+          sensorEntity.angle2 = value
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest3'
+        , max: 360
+        , min: 0
+        , value: 90 //初始值
+        , change: function (value) {
+          heading = value
+          sensorEntity._rotation.heading = Cesium.Math.toRadians(heading)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest4'
+        , max: 360
+        , min: 0
+        , value: 0 //初始值
+        , change: function (value) {
+          pitch = value
+          sensorEntity._rotation.pitch = Cesium.Math.toRadians(pitch)
+        }
+      });
+      //定义初始值
+      slider.render({
+        elem: '#slideTest5'
+        , max: 360
+        , min: 0
+        , value: 0 //初始值
+        , change: function (value) {
+          roll = value
+          sensorEntity._rotation.roll = Cesium.Math.toRadians(roll)
+        }
+      });
+
+    });
+  }
+  initViewer()
+</script>
+<style>
+  .layui-card {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    width: 250px;
+    background-color: #ffffff6b;
+    box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+    color: white
+  }
+</style>

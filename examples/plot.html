@@ -1,0 +1,87 @@
+<div id="viewer-container"></div>
+  <div class="layui-card">
+    <div class="layui-card-header" style="color:white">标绘面板</div>
+    <div class="layui-card-body">
+      <div>图形标绘:
+        <button type="button" class="layui-btn layui-btn-sm">坐标点</button>
+        <button type="button" class="layui-btn layui-btn-sm">线段</button>
+        <button type="button" class="layui-btn layui-btn-sm">多边形</button>
+        <button type="button" class="layui-btn layui-btn-sm">矩形</button>
+        <button type="button" class="layui-btn layui-btn-sm">圆形</button>
+      </div>
+      <br>
+      <div>三维标绘:
+          <button type="button" class="layui-btn layui-btn-sm">多边立方体</button>
+          <button type="button" class="layui-btn layui-btn-sm">四方体</button>
+          <button type="button" class="layui-btn layui-btn-sm">圆柱体</button>
+          <button type="button" class="layui-btn layui-btn-sm">围栏</button>
+          <button type="button" class="layui-btn layui-btn-sm">球体</button>
+          <button type="button" class="layui-btn layui-btn-sm">圆锥</button>
+          <button type="button" class="layui-btn layui-btn-sm">圆柱</button>
+          <button type="button" class="layui-btn layui-btn-sm">走廊</button>
+          <button type="button" class="layui-btn layui-btn-sm">管道</button>
+        </div>
+        <br>
+      <div>军事标绘:
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm">直角箭头</button>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm">攻击箭头</button>
+        <button type="button" class="layui-btn layui-btn-normal layui-btn-sm">钳击箭头</button>
+      </div>
+      <br>
+      <div>动态标绘:
+        <button type="button" class="layui-btn layui-btn-disabled layui-btn-sm">动态圆</button>
+        <button type="button" class="layui-btn layui-btn-disabled layui-btn-sm">动态扩散</button>
+        <button type="button" class="layui-btn layui-btn-disabled layui-btn-sm">动态线</button>
+      </div>
+      <br>
+      <div>清除标绘:
+        <button type="button" class="layui-btn layui-btn-primary layui-btn-sm">清除</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+  
+    let d3kit = new Cesium.D3Kit(viewer)
+  
+    let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+      style: 'dark'
+    }));
+    $('.layui-card-body button').on('click', function () {
+        let plotText = $(this).text()
+        if (plotText) {
+          switch (plotText) {
+            case '坐标点': d3kit.drawPointGraphics(); break;
+            case '线段': d3kit.drawLineGraphics(); break;
+            case '多边形': d3kit.drawPolygonGraphics(); break;
+            case '矩形': d3kit.drawRectangleGraphics(); break;
+            case '圆形': d3kit.drawCircleGraphics(); break;
+  
+            case '多边立方体': d3kit.drawPolygonGraphics({height:10000}); break;
+            case '四方体': d3kit.drawRectangleGraphics({height:10000}); break;
+            case '圆柱体': d3kit.drawCircleGraphics({height:10000}); break;
+            case '围栏': d3kit.drawWallGraphics(); break;
+            case '球体': d3kit.drawEllipsoidGraphics(); break;
+            case '圆锥': d3kit.drawCylinderGraphics({topRadius:1}); break;
+            case '圆柱': d3kit.drawCylinderGraphics(); break;
+            case '走廊': d3kit.drawCorridorGraphics({width:5000}); break;
+            case '管道': d3kit.drawPolylineVolumeGraphics(); break;
+  
+            case '直角箭头': d3kit.drawStraightArrowGraphics(); break;
+            case '攻击箭头': d3kit.drawAttackArrowGraphics(); break;
+            case '钳击箭头': d3kit.drawPincerArrowGraphics(); break;
+            case '清除': d3kit._drawLayer.entities.removeAll(); break;
+          }
+        }
+    })
+  </script>
+  <style>
+    .layui-card {
+      position: absolute;
+      top: 10px;
+      left: 5px;
+      background-color: #ffffff6b;
+      box-shadow: inset 1px 2px 2px 0 #f2f6fc;
+      color: white
+    }
+  </style>

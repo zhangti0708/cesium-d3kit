@@ -1,0 +1,115 @@
+<!--
+ * @Descripttion: 
+ * @version: 1.0.0
+ * @Author: zhangti
+ * @Date: 2020-05-21 22:03:05
+ * @LastEditors: zhangti
+ * @LastEditTime: 2020-07-26 18:48:52
+-->
+<div id="viewer-container"></div>
+<script>
+  let viewer = new Cesium.Viewer("viewer-container", { infoBox: false, shouldAnimate: true });
+
+  let d3kit = new Cesium.D3Kit(viewer)
+
+  let layer = viewer.imageryLayers.addImageryProvider(new Cesium.BaiduImageryProvider({
+    style: 'dark'
+  }));
+
+  d3kit.setDefSceneConfig()
+  d3kit.setBloomLightScene()
+  var tilesets = viewer.scene.primitives.add(new Cesium.Cesium3DTileset({
+    url: 'data/3DTiles/building/tileset.json'
+  }));
+
+  tilesets.readyPromise.then(function (tileset) {
+
+    tileset.style = new Cesium.Cesium3DTileStyle({
+      color: {
+        conditions: [
+          ["${height} >= 300", "rgba(0, 149, 251, 0.3)"],
+          ["${height} >= 200", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 100", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 50", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 25", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 10", "rgb(0, 149, 251, 0.3)"],
+          ["${height} >= 5", "rgb(0, 149, 251, 0.3)"],
+          ["true", "rgb(0, 149, 251, 0.3)"]
+        ]
+      }
+    });
+
+
+
+    viewer.flyTo(tileset)
+
+    let material = d3kit.getCustomMaterialWall({
+      image: 'data/images/Textures/test1.png',
+      freely: 'cross',
+      direction: '+',
+      count: 0.0,
+      color: Cesium.Color.BLUE,
+      duration: 2000
+    })
+    var ellipsoid = new Cesium.EllipsoidGraphics({
+      radii: new Cesium.Cartesian3(500, 500, 500), //单位 米
+      material: material,
+      maximumCone: Cesium.Math.PI_OVER_TWO,
+    })
+    var position = Cesium.Cartesian3.fromDegrees(104.081701757991, 30.627042558105988)
+    let three1 = viewer.entities.add({
+      name: 'aaaaa',
+      position: position,
+      ellipsoid: ellipsoid
+    })
+
+    //
+
+    let material2 = d3kit.getCustomMaterialWall({
+      image: 'data/images/Textures/color3.png',
+      freely: 'cross',
+      direction: '+',
+      count: 1.0,
+      color: Cesium.Color.BLUE.withAlpha(0.5),
+      duration: 2000
+    })
+
+    var position = Cesium.Cartesian3.fromDegrees(104.06417395476578, 30.636185094244944)
+    var ellipsoid = d3kit.getEllipsoidGraphics({
+      radii: 700,
+      material: material2,
+      outline: false,
+      outlineColor: Cesium.Color.WHITE.withAlpha(0.8)
+    })
+    ellipsoid.innerRadii = new Cesium.Cartesian3(700 / 1.5, 700 / 1.5, 700 / 1.5)
+    let three2 = viewer.entities.add({
+      name: 'aaaaa',
+      position: position,
+      ellipsoid: ellipsoid
+    })
+    //
+    let material3 = d3kit.getCustomMaterialWall({
+      image: 'data/images/Textures/b2.png',
+      freely: 'vertical',
+      direction: '+',
+      count: 1.0,
+      color: Cesium.Color.BLUE,
+      duration: 2000
+    })
+
+    var ellipsoid = new Cesium.EllipsoidGraphics({
+      radii: new Cesium.Cartesian3(500, 500, 500), //单位 米
+      material: material3,
+      maximumCone: Cesium.Math.PI_OVER_TWO,
+    })
+    var position = Cesium.Cartesian3.fromDegrees(104.05248507490258, 30.653854957158103)
+
+
+    let three3 = viewer.entities.add({
+      name: 'aaaaa',
+      position: position,
+      ellipsoid: ellipsoid
+    })
+
+  });
+</script>
