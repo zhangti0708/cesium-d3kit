@@ -15,11 +15,13 @@
 ##### 将map目录直接放在web服务器下直接浏览
 ##### 打开examples目录下的html功能示例文件需要自行引入插件。
 
-#####  在项目中引入Cesium.js
+#####  在项目中引入Cesium.js 相关文件
 
 #####  然后引入 cesium-d3kit.js 即可
 
 ```
+    // 个别功能需要引入三方js和css 按需引入即可
+    <link href="lib/Cesium/Widgets/widgets.css" rel="stylesheet">
     <script src="lib/Cesium/Cesium.js"></script>
     <script src="lib/cesium-d3kit.js"></script>
     <div id="viewerContainer"></div>
